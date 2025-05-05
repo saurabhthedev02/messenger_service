@@ -1,0 +1,27 @@
+<%= form_with(
+      model: [ conversation, Message.new ],
+      data: {
+        controller: "typing emoji direct-upload",
+        typing_conversation_id_value: conversation.id,
+        turbo_stream: true,
+        direct_upload: true
+      },
+      id: "new_message_form"
+    ) do |f| %>
+  <div style="display: flex; gap: 8px; align-items: center;">
+    <button type="button" data-emoji-target="button" style="font-size: 1.5em; background: none; border: none; cursor: pointer;">😊</button>
+    <%= f.text_field :body,
+          placeholder: "Type a message...",
+          autofocus: true,
+          style: "flex: 1;",
+          data: { typing_target: "input", emoji_target: "input" },
+          id: "chat-input" %>
+    <%= f.file_field :media, 
+          direct_upload: true, 
+          style: "flex: 1;",
+          accept: "image/*,video/*",
+          data: { direct_upload_target: "input" } %>
+    <%= f.submit "Send", style: "padding: 8px 16px; border-radius: 4px; background: #007bff; color: #fff; border: none;" %>
+  </div>
+  <emoji-picker data-emoji-target="picker" style="position: absolute; z-index: 1000; display: none; background: #fff;"></emoji-picker>
+<% end %>

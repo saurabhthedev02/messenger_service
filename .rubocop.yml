@@ -1,0 +1,103 @@
+plugins:
+  - rubocop-rails
+  - rubocop-performance
+
+AllCops:
+  TargetRubyVersion: 3.4.2
+  NewCops: enable
+  Exclude:
+    - .git/**/*
+    - bin/**/*
+    - db/schema.rb
+    - log/**/*
+    - storage/**/*
+    - tmp/**/*
+    - vendor/**/*
+    - test/**/*
+    - db/migrate/20250428051859_create_active_storage_tables.active_storage.rb
+    - config/initializers/devise.rb
+
+Layout/CaseIndentation:
+  EnforcedStyle: end
+Layout/EndAlignment:
+  EnforcedStyleAlignWith: variable
+Layout/EndOfLine:
+  EnforcedStyle: lf
+Layout/LineLength:
+  Max: 120
+  Exclude:
+    - lib/tasks/**/*
+    - spec/factories/**/*
+Layout/MultilineMethodCallIndentation:
+  EnforcedStyle: indented
+
+Lint/MissingSuper:
+  Enabled: false
+
+Metrics/BlockLength:
+  Exclude:
+    - spec/**/*
+    - config/environments/*
+    - config/routes.rb
+    - config/initializers/*
+    - config/routes/*
+    - db/seeds.rb
+    - lib/tasks/**/*
+Metrics/MethodLength:
+  Max: 15
+  Exclude:
+    - db/**/*
+    - lib/tasks/**/*
+    - spec/**/*
+Metrics/ClassLength:
+  Max: 100
+Naming/VariableNumber:
+  Enabled: false
+Style/ArgumentsForwarding:
+  Enabled: false
+Style/AsciiComments:
+  Enabled: false
+Style/ClassAndModuleChildren:
+  Enabled: false
+Style/SafeNavigationChainLength:
+  Enabled: false
+Style/Documentation:
+  Enabled: false
+Style/FetchEnvVar:
+  Enabled: false
+Style/FrozenStringLiteralComment:
+  Exclude:
+    - app/views/v3/**/*
+Style/HashConversion:
+  Enabled: false
+Style/Lambda:
+  EnforcedStyle: literal
+Style/MixinGrouping:
+  EnforcedStyle: grouped
+Style/OpenStructUse:
+  Enabled: false
+Style/RedundantRegexpCharacterClass:
+  Enabled: false
+Style/RedundantConstantBase:
+  Enabled: false
+Style/HashSyntax:
+  Enabled: false
+Style/RedundantParentheses:
+  Enabled: false
+Rails/ActionOrder:
+  Enabled: false
+Rails/DurationArithmetic:
+  Enabled: false
+Rails/EnumSyntax:
+  Enabled: false
+Rails/ThreeStateBooleanColumn:
+  Enabled: false
+Rails/UniqueValidationWithoutIndex:
+  Enabled: false
+Rails/SkipsModelValidations:
+  Exclude:
+    - spec/**/*
+Rails/WhereRange:
+  Enabled: false
+Rails/I18nLocaleTexts:
+  Enabled: false

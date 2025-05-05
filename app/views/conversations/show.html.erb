@@ -1,0 +1,169 @@
+<div class="conversation-container">
+  <div id="conversation-id" data-conversation-id="<%= @conversation.id %>"></div>
+
+  <div class="conversation-header">
+    <%= link_to conversations_path, class: "btn btn-secondary" do %>
+      <i class="fas fa-arrow-left"></i> Back to Conversations
+    <% end %>
+    
+    <button id="online-users-btn" class="btn btn-primary" data-action="click->conversation-show#toggleOnlineUsers">
+      <i class="fas fa-users"></i> Show Online Users
+    </button>
+  </div>
+
+  <div id="online-users-popup" class="online-users-popup" data-conversation-show-target="onlineUsersPopup">
+    <h4>Online Users</h4>
+    <div class="online-users-list">
+      <% online_users = @conversation.users.select { |u| PresenceService.online?(u.id) } %>
+      <% if online_users.any? %>
+        <ul>
+          <% online_users.each do |user| %>
+            <li>
+              <span class="online-indicator"></span>
+              <%= user.username %>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <div class="no-users">No users online</div>
+      <% end %>
+    </div>
+  </div>
+
+  <h2 class="conversation-title">
+    <%= @conversation.name.presence || "Conversation" %>
+  </h2>
+
+  <div id="messages" class="messages-container" data-conversation-show-target="messages">
+    <%= turbo_stream_from @conversation %>
+    <%= turbo_stream_from [@conversation, current_user] %>
+    <%= render(@messages&.compact || [], current_user: current_user) %>
+  </div>
+
+  <div id="typing-indicator" class="typing-indicator" data-typing-target="indicator"></div>
+
+  <%= render "messages/form", conversation: @conversation %>
+</div>
+
+<script>
+  function scrollMessagesToBottom() {
+    const messagesDiv = document.getElementById("messages");
+    if (messagesDiv) {
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+  }
+
+  // Scroll on initial page load
+  document.addEventListener("DOMContentLoaded", scrollMessagesToBottom);
+
+  // Scroll after Turbo navigation or Turbo Stream update
+  document.addEventListener("turbo:load", scrollMessagesToBottom);
+  document.addEventListener("turbo:before-stream-render", scrollMessagesToBottom);
+
+  document.addEventListener("DOMContentLoaded", function() {
+    const btn = document.getElementById("online-users-btn");
+    const popup = document.getElementById("online-users-popup");
+    let popupVisible = false;
+
+    btn.addEventListener("click", function(e) {
+      popupVisible = !popupVisible;
+      popup.style.display = popupVisible ? "block" : "none";
+      // Position the popup below the button
+      if (popupVisible) {
+        const rect = btn.getBoundingClientRect();
+        popup.style.left = rect.left + "px";
+        popup.style.top = (rect.bottom + window.scrollY + 5) + "px";
+      }
+    });
+
+    // Hide popup when clicking outside
+    document.addEventListener("click", function(e) {
+      if (!btn.contains(e.target) && !popup.contains(e.target)) {
+        popup.style.display = "none";
+        popupVisible = false;
+      }
+    });
+  });
+
+  document.addEventListener("DOMContentLoaded", function() {
+    const emojiBtn = document.getElementById("emoji-btn");
+    const emojiPicker = document.getElementById("emoji-picker");
+    const input = document.getElementById("chat-input");
+
+    if (emojiBtn && emojiPicker && input) {
+      // Toggle picker and position it below the button
+      emojiBtn.addEventListener("mousedown", function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (emojiPicker.style.display === "none") {
+          // Position the picker below the button
+          const rect = emojiBtn.getBoundingClientRect();
+          emojiPicker.style.left = rect.left + "px";
+          emojiPicker.style.top = (rect.bottom + window.scrollY + 5) + "px";
+          emojiPicker.style.display = "block";
+        } else {
+          emojiPicker.style.display = "none";
+        }
+      });
+
+      // Prevent picker from closing when clicking inside it
+      emojiPicker.addEventListener("mousedown", function(e) {
+        e.stopPropagation();
+      });
+
+      // Insert emoji into input at cursor position
+      emojiPicker.addEventListener("emoji-click", event => {
+        const emoji = event.detail.unicode;
+        const start = input.selectionStart;
+        const end = input.selectionEnd;
+        const text = input.value;
+        input.value = text.slice(0, start) + emoji + text.slice(end);
+        input.focus();
+        input.selectionStart = input.selectionEnd = start + emoji.length;
+        emojiPicker.style.display = "none";
+      });
+
+      // Hide picker if clicking outside
+      document.addEventListener("mousedown", function(e) {
+        if (emojiPicker.style.display === "block" && !emojiPicker.contains(e.target) && e.target !== emojiBtn) {
+          emojiPicker.style.display = "none";
+        }
+      });
+
+      // Hide picker on Turbo navigation (if using Turbo)
+      document.addEventListener("turbo:before-visit", function() {
+        emojiPicker.style.display = "none";
+      });
+    }
+  });
+
+  // Hide all chat images initially
+  function hideChatImages() {
+    document.querySelectorAll('.chat-image').forEach(img => {
+      img.style.visibility = 'hidden';
+    });
+  }
+
+  // Show images after a delay
+  function showChatImagesWithDelay(delay = 1200) {
+    setTimeout(() => {
+      document.querySelectorAll('.chat-image').forEach(img => {
+        img.style.visibility = 'visible';
+        // Optionally, reload the image to force the browser to try again
+        if (img.src) {
+          img.src = img.src;
+        }
+      });
+    }, delay);
+  }
+
+  // On Turbo Stream render or page load
+  document.addEventListener("turbo:load", () => {
+    hideChatImages();
+    showChatImagesWithDelay();
+  });
+  document.addEventListener("turbo:before-stream-render", () => {
+    hideChatImages();
+    showChatImagesWithDelay();
+  });
+</script>

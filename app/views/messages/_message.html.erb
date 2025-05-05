@@ -1,0 +1,35 @@
+<% user = local_assigns[:current_user] %>
+
+<div id="<%= dom_id(message) %>" data-controller="read" data-read-message-id-value="<%= message.id %>" data-read-status-value="<%= !!(user && message.message_receipts.find_by(user: user)&.read?) %>" class="chat-message" style="margin-bottom: 14px; display: flex; align-items: flex-start;">
+  <div style="background: #e6f3ff; border-radius: 8px; padding: 10px 16px; min-width: 120px; max-width: 70%; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
+    <div style="font-weight: 600; margin-bottom: 2px;">
+      <%= message.user.username %>
+      <% if defined?(PresenceService) && PresenceService.online?(message.user.id) %>
+        <span style="color: green; font-size: 0.8em;">●</span>
+      <% else %>
+        <span style="color: gray; font-size: 0.8em;">●</span>
+      <% end %>
+    </div>
+    <div><%= message.body %></div>
+    <% if message.media.attached? %>
+      <div style="margin-top: 6px;">
+        <% if message.media.content_type.start_with?('video/') %>
+          <video controls style="max-width: 300px; border-radius: 4px;" class="chat-video">
+            <source src="<%= rails_blob_url(message.media) %>" type="<%= message.media.content_type %>">
+            Your browser does not support the video tag.
+          </video>
+        <% else %>
+          <%= image_tag rails_blob_url(message.media), style: "max-width: 180px; border-radius: 4px;", class: "chat-image" %>
+        <% end %>
+      </div>
+    <% end %>
+    <div style="font-size: 0.8em; color: #888; margin-top: 4px;">
+      <%= message.created_at.strftime("%H:%M") %>
+      <% if user && message.message_receipts.find_by(user: user)&.read? %>
+        <span style="color: blue;">✓✓ Read</span>
+      <% else %>
+        <span style="color: gray;">✓ Delivered</span>
+      <% end %>
+    </div>
+  </div>
+</div>

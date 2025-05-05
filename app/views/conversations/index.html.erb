@@ -1,0 +1,54 @@
+<div class="conversations-container">
+  <div class="conversations-header">
+    <h1>Conversations</h1>
+    <%= link_to new_conversation_path, class: "btn btn-primary" do %>
+      <i class="fas fa-plus"></i> New Conversation
+    <% end %>
+  </div>
+  
+  <div class="conversations-list">
+    <% if @conversations.any? %>
+      <% @conversations.each do |conversation| %>
+        <div class="conversation-item">
+          <div class="conversation-content">
+            <div class="conversation-info">
+              <h3 class="conversation-name">
+                <%= link_to conversation.name, conversation, class: "conversation-link" %>
+              </h3>
+              <div class="conversation-meta">
+                <span class="participants">
+                  <i class="fas fa-users"></i>
+                  <%= conversation.users.count %> participants
+                </span>
+                <span class="last-updated">
+                  <i class="fas fa-clock"></i>
+                  <%= time_ago_in_words(conversation.updated_at) %> ago
+                </span>
+              </div>
+            </div>
+            <div class="conversation-actions">
+              <%= link_to conversation, class: "btn btn-outline-primary" do %>
+                <i class="fas fa-comments"></i> View
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    <% else %>
+      <div class="empty-state">
+        <i class="fas fa-comments"></i>
+        <h3>No conversations yet</h3>
+        <p>Start a new conversation to begin chatting</p>
+        <%= link_to new_conversation_path, class: "btn btn-primary" do %>
+          <i class="fas fa-plus"></i> Create Conversation
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <% if @conversations.any? %>
+    <div class="pagination">
+      <%= paginate @conversations %>
+    </div>
+  <% end %>
+</div> 

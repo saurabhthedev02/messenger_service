@@ -1,0 +1,45 @@
+<div class="conversation-form-container">
+  <div class="conversation-form-header">
+    <h1>New Conversation</h1>
+    <p class="form-description">Create a new conversation to start chatting with others</p>
+  </div>
+
+  <%= form_with(model: @conversation, class: "conversation-form") do |f| %>
+    <div class="form-group">
+      <%= f.label :name, class: "form-label" do %>
+        <i class="fas fa-comment-alt"></i> Conversation Name
+      <% end %>
+      <%= f.text_field :name, 
+          class: "form-control #{'is-invalid' if @conversation.errors[:name].any?}", 
+          placeholder: "Enter a name for your conversation",
+          required: true %>
+      <% if @conversation.errors[:name].any? %>
+        <div class="invalid-feedback">
+          <i class="fas fa-exclamation-circle"></i>
+          <%= @conversation.errors[:name].first %>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="form-group">
+      <div class="checkbox-group">
+        <%= f.check_box :is_group, class: "form-checkbox", id: "is_group" %>
+        <%= f.label :is_group, class: "checkbox-label" do %>
+          <i class="fas fa-users"></i> Group Conversation
+        <% end %>
+      </div>
+      <small class="form-text">
+        <i class="fas fa-info-circle"></i>
+        Enable this to create a conversation with multiple participants
+      </small>
+    </div>
+
+    <div class="form-actions">
+      <%= f.submit "Create Conversation", class: "btn btn-primary" do %>
+        <i class="fas fa-plus"></i> Create Conversation
+      <% end %>
+      <%= link_to conversations_path, class: "btn btn-secondary" do %>
+        <i class="fas fa-times"></i> Cancel
+      <% end %>
+    </div>
+  <% end %> 

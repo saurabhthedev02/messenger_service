@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>MessengerService</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+    <meta name="current-user-id" content="<%= current_user.id %>">
+    <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
+  </head>
+
+  <body>
+    <nav class="navbar">
+      <div class="navbar-brand">
+        <%= link_to "Messenger", root_path, class: "navbar-item" %>
+      </div>
+      <div class="navbar-end">
+        <div class="navbar-item">
+          <div class="buttons">
+            <%= button_to "Logout", destroy_user_session_path, method: :delete, class: "button is-light" %>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <%= yield %>
+  </body>
+</html>
